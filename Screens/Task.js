@@ -10,7 +10,6 @@ export default function Task({ task, index, deleteItem }) {
         <Text style={styles.text}>{task.name}</Text>
       </View>
       <Text style={styles.date}>{task.date}</Text>
-
       <View>
         <TouchableOpacity onPress={() => deleteItem(index)}>
           <Icon
