@@ -54,7 +54,7 @@ export default function TaskMyDay() {
   return (
     <View style={styles.container}>
       <View style={styles.tasksWrapper}>
-        <Text style={styles.heading}>Today's Work</Text>
+        <Text style={styles.heading}>Today's Work`</Text>
         <View style={{ borderBottomWidth: 1, margin: 5 }}></View>
 
         <ScrollView>

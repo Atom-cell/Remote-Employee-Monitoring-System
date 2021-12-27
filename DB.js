@@ -16,7 +16,7 @@ const firebaseConfig = {
   measurementId: "G-HZKW0N2SS3",
 };
 const app = firebase.initializeApp(firebaseConfig);
-
+// firebase.firestore().settings({ experimentalForceLongPolling: true });
 const db = firebase.firestore(app);
 
 export const AssignedTasks = db.collection("AssignedTasks");

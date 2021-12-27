@@ -8,8 +8,8 @@ export default function Task({ task, index, deleteItem }) {
       <View style={styles.itemLeft}>
         <View style={styles.square}></View>
         <Text style={styles.text}>{task.name}</Text>
+        <Text style={styles.date}>{task.date}</Text>
       </View>
-      <Text style={styles.date}>{task.date}</Text>
       <View>
         <TouchableOpacity onPress={() => deleteItem(index)}>
           <Icon
@@ -33,9 +33,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 20,
+    maxWidth: "100%",
+    // flexWrap: "wrap",
   },
   date: {
-    // marginLeft: 20,
+    marginLeft: 20,
     fontSize: 17,
   },
   itemLeft: {

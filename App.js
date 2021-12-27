@@ -83,7 +83,7 @@ const TasksStack = () => {
         <Stack.Screen name="TaskMain" component={Tasks} />
         <Stack.Screen name="Mine" component={TaskMine} />
         <Stack.Screen name="Assigned" component={TaskAssigned} />
-        <Stack.Screen name="MyDay" component={TaskMyDay} />
+        {/* <Stack.Screen name="MyDay" component={TaskMyDay} /> */}
         <Stack.Screen name="Completed" component={TaskCompleted} />
       </Stack.Navigator>
     </MenuProvider>
