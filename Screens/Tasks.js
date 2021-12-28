@@ -4,13 +4,13 @@ import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 const Task = ({ navigation }) => {
   return (
     <View>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.btnWrapper}
         onPress={() => navigation.navigate("MyDay")}
       >
         <View style={styles.dot}></View>
         <Text style={styles.txt}>My Day</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <TouchableOpacity
         style={styles.btnWrapper}
         onPress={() => navigation.navigate("Assigned")}

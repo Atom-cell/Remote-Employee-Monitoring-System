@@ -5,29 +5,56 @@ import {
   View,
   ScrollView,
   Pressable,
-  Button,
+  TouchableOpacity,
 } from "react-native";
 import Task from "./Task";
-
+import { Icon } from "react-native-elements";
+import {
+  Menu,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger,
+} from "react-native-popup-menu";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import AssignModal from "./AssignModal";
 
 export default function TaskCompleted() {
   const [taskItems, setTaskItems] = React.useState([]);
+  const [filterN, setFilterN] = React.useState("My Tasks");
+  const [ATasks, setATasks] = React.useState([]); //Assigned tasks List
+  const [modal, setModal] = React.useState(false);
 
   React.useEffect(() => {
-    const getData = async () => {
-      try {
-        const jsonValue = await AsyncStorage.getItem("completed");
-        if (JSON.parse(jsonValue) !== null) {
-          setTaskItems(JSON.parse(jsonValue));
-          // setBackup(JSON.parse(jsonValue));
-        } else {
-          setTaskItems([]);
-        }
-      } catch (e) {}
-    };
-    let a = getData();
+    filterTheList();
   }, []);
+
+  const getData = async () => {};
+
+  const filterTheList = async () => {
+    // if (filterN === "My Tasks") {
+    try {
+      const jsonValue = await AsyncStorage.getItem("completed");
+      if (JSON.parse(jsonValue) !== null) {
+        setTaskItems(JSON.parse(jsonValue));
+      } else {
+        setTaskItems([]);
+      }
+    } catch (e) {}
+    // } else {
+    try {
+      const jsonValue = await AsyncStorage.getItem("assignCompleted");
+      if (JSON.parse(jsonValue) !== null) {
+        setATasks(JSON.parse(jsonValue));
+      } else {
+        setATasks([]);
+      }
+    } catch (e) {}
+    // }
+  };
+
+  const hideModal = () => {
+    setModal(false);
+  };
 
   const deleteItem = async (id) => {
     let a = taskItems.filter((v) => {
@@ -48,21 +75,74 @@ export default function TaskCompleted() {
       <View style={styles.tasksWrapper}>
         <Text style={styles.heading}>Completed</Text>
         <View style={{ borderBottomWidth: 1, margin: 5 }}></View>
-
+        <View style={styles.filter}>
+          <Text style={{ fontSize: 20, fontWeight: "bold" }}>{filterN}</Text>
+          <Menu>
+            <MenuTrigger>
+              <Icon name="filter" type="font-awesome-5" size={25} />
+            </MenuTrigger>
+            <MenuOptions
+              optionsContainerStyle={{ position: "absolute", right: 10 }}
+              customStyles={{
+                optionWrapper: { padding: 16 },
+                optionText: { fontSize: 17 },
+              }}
+            >
+              <MenuOption
+                onSelect={() => {
+                  filterTheList(), setFilterN("My Tasks");
+                }}
+                text="My Tasks"
+              />
+              <MenuOption
+                onSelect={() => {
+                  filterTheList(), setFilterN("Assigned Tasks");
+                }}
+                text="Assigned Tasks"
+              />
+            </MenuOptions>
+          </Menu>
+        </View>
         <ScrollView>
           <View style={styles.tasks}>
-            {taskItems.map((item, index) => {
-              return (
-                <Pressable key={item.id}>
-                  <Task
-                    key={item.id}
-                    task={item}
-                    deleteItem={deleteItem}
-                    index={item.id}
-                  />
-                </Pressable>
-              );
-            })}
+            {filterN === "My Tasks"
+              ? taskItems.map((item, index) => {
+                  return (
+                    <Pressable key={item.id}>
+                      <Task
+                        key={item.id}
+                        task={item}
+                        deleteItem={deleteItem}
+                        index={item.id}
+                      />
+                    </Pressable>
+                  );
+                })
+              : ATasks.map((item, index) => {
+                  return (
+                    <TouchableOpacity
+                      style={styles.itemsWrapper}
+                      onPress={() => {
+                        setModal(true);
+                      }}
+                      key={item._id}
+                    >
+                      {modal ? (
+                        <AssignModal
+                          hideModal={hideModal}
+                          obj={item}
+                          completed={true}
+                        />
+                      ) : null}
+                      <View style={styles.item}>
+                        <View style={styles.itemLeft}>
+                          <View style={styles.square}></View>
+                          <Text style={styles.text}>{item.TaskName}</Text>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
           </View>
         </ScrollView>
       </View>
@@ -84,70 +164,35 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 7,
   },
-  tasks: {},
-  writeTaskWrapper: {
-    paddingHorizontal: 20,
-    position: "absolute",
-    bottom: 90,
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    // backgroundColor: "#fff",
-  },
-  writeTaskWrapper2: {
-    paddingHorizontal: 20,
-    position: "absolute",
-    bottom: 30,
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    // backgroundColor: "#fff",
-  },
   filter: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 13,
   },
-  writeTask: {
-    backgroundColor: "white",
-    color: "black",
-    width: "80%",
-    borderRadius: 60,
-    padding: 15,
+  text: {
+    maxWidth: "80%",
+    fontSize: 17,
   },
-  writeTask2: {
+  item: {
     backgroundColor: "white",
-    color: "black",
-    width: "30%",
-    borderRadius: 60,
     padding: 15,
+    borderRadius: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 20,
   },
-  addWrapper: {
-    backgroundColor: "white",
-    width: 60,
-    height: 60,
-    borderRadius: 60,
-    justifyContent: "center",
+  itemLeft: {
+    flexDirection: "row",
+    flexWrap: "wrap",
     alignItems: "center",
   },
-  addButton: {
-    fontSize: 24,
-  },
-  cancelWrapper: {
-    padding: 7,
-    width: 40,
-    height: 40,
-    borderRadius: 50,
-    backgroundColor: "grey",
-    marginHorizontal: 5,
-    justifyContent: "center",
-    alignItems: "center",
-    position: "absolute",
-    right: 90,
-  },
-  cancel: {
-    fontWeight: "bold",
+  square: {
+    width: 24,
+    height: 24,
+    backgroundColor: "#F4BE2C",
+    borderRadius: 5,
+    opacity: 0.5,
+    marginRight: 15,
   },
 });

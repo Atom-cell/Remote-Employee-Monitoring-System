@@ -111,8 +111,8 @@ export default function App() {
         }}
         drawerContent={(props) => <CustomDrawer {...props} />}
       >
-        <Drawer.Screen name="Tasks" component={TasksStack} />
         <Drawer.Screen name="Attendence" component={Attendence} />
+        <Drawer.Screen name="Tasks" component={TasksStack} />
         <Drawer.Screen name="Dashboard" component={Dashboard} />
         <Drawer.Screen
           name="Time"

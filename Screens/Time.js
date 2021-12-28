@@ -4,21 +4,24 @@ import { Icon } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import TimeModal from "./TimeModal";
 import { useStopwatch } from "react-timer-hook";
+import { AssignedTasks } from "../DB";
 
-const PauseTime = ({ startTimer, stopTimer }) => {
+const PauseTime = ({ startTimer, stopTimer, getPauseTime }) => {
   const { seconds, minutes, hours, days, isRunning, start, pause, reset } =
     useStopwatch({ autoStart: false });
   React.useEffect(() => {
-    if (stopTimer) {
-      console.log("STOP ");
-      reset();
-      pause();
-    } else if (startTimer) {
+    if (startTimer) {
       console.log("START ");
       // reset();
       start();
-    } else {
+    } else if (stopTimer) {
+      console.log("STOP ");
+      reset();
       pause();
+    } else {
+      console.log("PAUSE");
+      pause();
+      getPauseTime(seconds, minutes);
     }
   }, [startTimer, startTimer]);
   return (
@@ -33,15 +36,15 @@ const PauseTime = ({ startTimer, stopTimer }) => {
 };
 const Time = ({ route, navigation }) => {
   const [startbtn, setStartbtn] = React.useState(true);
+  const [pausebtn, setPausebtn] = React.useState(false);
   const [current, setCurrent] = React.useState("");
   const [modal, setModal] = React.useState(false);
   const [modalMsg, setModalMsg] = React.useState("");
-  const [pausebtn, setPausebtn] = React.useState(false);
 
   const { seconds, minutes, hours, days, isRunning, start, pause, reset } =
     useStopwatch({ autoStart: false });
 
-  React.useEffect(() => {}, [pausebtn, startbtn]);
+  React.useEffect(() => {}, [startbtn]);
 
   const getData = async () => {
     let v = JSON.parse(await AsyncStorage.getItem("timedTask"));
@@ -56,9 +59,27 @@ const Time = ({ route, navigation }) => {
     }
   });
 
+  const getPauseTime = (s, m) => {
+    console.log("sec", s, "min", m);
+  };
+
+  // timer STOPPED
+  const updateComplete = async () => {
+    setPausebtn(false);
+    console.log("p btn ", pausebtn);
+    setStartbtn(true);
+    console.log("s btn", startbtn);
+    navigation.setParams({ name: "" });
+    let a = await AsyncStorage.getItem("timedTask");
+    let id = JSON.parse(a);
+    AssignedTasks.doc(id._id).update({ Completed: true });
+    AsyncStorage.setItem("started", "false");
+  };
+
   const hideModal = (ans) => {
     setModal(false);
     if (modalMsg === "Do You Want to Start this Task?" && ans === "y") {
+      AsyncStorage.setItem("started", "true");
       setStartbtn(false);
       reset();
       start();
@@ -66,13 +87,9 @@ const Time = ({ route, navigation }) => {
     }
 
     if (modalMsg === "Do You Want to Finish this Task?" && ans === "y") {
-      setStartbtn(true);
-      setPausebtn(false);
-      setStartbtn(true);
-      console.log("p btn ", pausebtn);
-      console.log("s btn", startbtn);
       reset();
       pause();
+      updateComplete();
     } else if (modalMsg === "Do You Want to Finish this Task?" && ans === "n") {
     }
   };
@@ -83,14 +100,12 @@ const Time = ({ route, navigation }) => {
         {modal ? <TimeModal hideModal={hideModal} msg={modalMsg} /> : null}
         <Text style={{ fontSize: 37, fontWeight: "bold" }}>{current}</Text>
         <View style={styles.timer}>
-          {/* <View style={{ alignItems: "center", marginHorizontal: 20 }}>
-            <Text style={{ fontSize: 17 }}>H H : M M</Text>
-            <Text style={{ fontSize: 47, fontWeight: "bold" }}>
-              {minutes}:{seconds}
-            </Text>
-            <Text style={{ fontSize: 20 }}>Pause time</Text>
-          </View> */}
-          <PauseTime stopTimer={startbtn} startTimer={pausebtn} />
+          <PauseTime
+            stopTimer={startbtn}
+            startTimer={pausebtn}
+            getPauseTime={getPauseTime}
+          />
+
           <View style={{ alignItems: "center", marginHorizontal: 20 }}>
             <Text style={{ fontSize: 17 }}>H H : M M</Text>
             <Text style={{ fontSize: 47, fontWeight: "bold" }}>
@@ -212,3 +227,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
+
+{
+  /* <View style={{ alignItems: "center", marginHorizontal: 20 }}>
+            <Text style={{ fontSize: 17 }}>H H : M M</Text>
+            <Text style={{ fontSize: 47, fontWeight: "bold" }}>
+              {minutes}:{seconds}
+            </Text>
+            <Text style={{ fontSize: 20 }}>Pause time</Text>
+          </View> */
+}

@@ -2,6 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View, Button, TouchableOpacity } from "react-native";
 import TouchID from "react-native-touch-id";
 import { Calendar } from "react-native-calendars";
+import { abs } from "react-native-reanimated";
 
 const Attendence = ({ navigation }) => {
   const [absentees, setAbsentess] = React.useState({
@@ -18,7 +19,13 @@ const Attendence = ({ navigation }) => {
             backgroundColor: "white",
             borderRadius: 30,
           }}
-          onPress={() => alert("hello there!")}
+          onPress={() =>
+            setAbsentess({
+              "2021-12-17": { marked: true },
+              "2021-12-25": { marked: true },
+              "2021-12-29": { marked: true },
+            })
+          }
         >
           <Text style={{ fontSize: 15, fontWeight: "700" }}>
             Take Attendence
@@ -27,6 +34,11 @@ const Attendence = ({ navigation }) => {
       ),
     });
   }, [navigation]);
+
+  // React.useEffect(() => {
+  //   check();
+  // });
+
   const optionalConfigObject = {
     title: "Authentication Required", // Android
     imageColor: "#e00606", // Android
@@ -92,7 +104,7 @@ const Attendence = ({ navigation }) => {
       <View style={styles.wrapper}>
         <View style={styles.absentWrapper}>
           <Text style={{ fontSize: 25, marginBottom: 27 }}>Absents</Text>
-          <Text style={styles.txt}>00</Text>
+          <Text style={styles.txt}>{Object.keys(absentees).length}</Text>
         </View>
         <View style={styles.presentWrapper}>
           <Text style={{ fontSize: 25, marginBottom: 27 }}>Presents</Text>

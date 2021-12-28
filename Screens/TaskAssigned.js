@@ -27,12 +27,21 @@ export default function TaskAssigned({ navigation }) {
     setIsLoading(false);
     let arr = [];
     setTasksList([...arr]);
-    AssignedTasks.where("empID", "==", "1").onSnapshot((querySnapshot) => {
+    // getting tasks from DB
+    AssignedTasks.where("empID", "==", "3").onSnapshot((querySnapshot) => {
       querySnapshot.forEach((v) => {
-        arr.push(v.data());
+        if (!v.data().Completed) arr.push({ _id: v.id, ...v.data() });
         setTasksList([...tasksList, ...arr]);
-        // const jsonValue = JSON.stringify([...tasksList, ...arr]);
-        // AsyncStorage.setItem("assigned", jsonValue);
+      });
+    });
+
+    // storing completed tasks in Async
+    let arr1 = [];
+    AssignedTasks.where("empID", "==", "3").onSnapshot((querySnapshot) => {
+      querySnapshot.forEach((v) => {
+        if (v.data().Completed) arr1.push({ _id: v.id, ...v.data() });
+        const jsonValue = JSON.stringify(arr1);
+        AsyncStorage.setItem("assignCompleted", jsonValue);
       });
     });
   };
@@ -45,7 +54,7 @@ export default function TaskAssigned({ navigation }) {
     hideModal();
     let obj = {
       name: name,
-      id: id,
+      _id: id,
     };
     const jsonValue = JSON.stringify(obj);
     await AsyncStorage.setItem("timedTask", jsonValue);
@@ -59,7 +68,9 @@ export default function TaskAssigned({ navigation }) {
           <Button
             title="ff"
             onPress={async () => {
-              let a = await AsyncStorage.getItem("timedTask");
+              // AsyncStorage.removeItem("timedTask");
+              // let a = await AsyncStorage.getItem("timedTask");
+              let a = await AsyncStorage.getItem("assignCompleted");
               console.log(JSON.parse(a));
             }}
           />
@@ -77,12 +88,14 @@ export default function TaskAssigned({ navigation }) {
               return (
                 <TouchableOpacity
                   style={styles.itemsWrapper}
-                  onPress={() => {
-                    setModal(true);
-                    setObj(item.item);
+                  onPress={async () => {
+                    let a = await AsyncStorage.getItem("started");
+                    if (a === "false") {
+                      setModal(true);
+                      setObj(item.item);
+                    }
                   }}
                 >
-                  {/* {modal ? <AssignModal hideModal={hideModal} obj={item.item} /> : null} */}
                   <View style={styles.item}>
                     <View style={styles.itemLeft}>
                       <View style={styles.square}></View>

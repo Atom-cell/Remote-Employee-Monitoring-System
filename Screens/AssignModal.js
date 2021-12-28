@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Button, Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import Modal from "react-native-modal";
 
-export default function AssignModal({ hideModal, obj, change }) {
+export default function AssignModal({ hideModal, obj, change, completed }) {
   const [isModalVisible, setModalVisible] = useState(true);
 
   const startTask = () => {};
@@ -19,16 +19,22 @@ export default function AssignModal({ hideModal, obj, change }) {
           </View>
           <View style={{ flexDirection: "row" }}>
             <Text style={styles.txt}>
-              {obj.Billable ? <Text>Billable</Text> : <Text>not Billable</Text>}
+              {obj.Completed ? (
+                <Text>Completed</Text>
+              ) : (
+                <Text>Not Completed</Text>
+              )}
             </Text>
             <View style={{ marginHorizontal: 10 }}></View>
             <Text style={styles.txt}>${obj.Rate}/h</Text>
           </View>
           <View style={styles.bottom}>
-            <TouchableOpacity onPress={() => change(obj.TaskName, obj.id)}>
-              <Text style={{ fontWeight: "bold", fontSize: 25 }}>
-                Start Task
-              </Text>
+            <TouchableOpacity onPress={() => change(obj.TaskName, obj._id)}>
+              {!completed ? (
+                <Text style={{ fontWeight: "bold", fontSize: 25 }}>
+                  Start Task
+                </Text>
+              ) : null}
             </TouchableOpacity>
           </View>
         </View>
