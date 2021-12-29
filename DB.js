@@ -21,4 +21,6 @@ const db = firebase.firestore(app);
 
 export const AssignedTasks = db.collection("AssignedTasks");
 
+export const Attend = db.collection("Attendence");
+
 export { firebase };

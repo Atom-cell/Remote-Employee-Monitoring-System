@@ -10,6 +10,7 @@ const PauseTime = ({ startTimer, stopTimer, getPauseTime }) => {
   const { seconds, minutes, hours, days, isRunning, start, pause, reset } =
     useStopwatch({ autoStart: false });
   React.useEffect(() => {
+    console.log("render");
     if (startTimer) {
       console.log("START ");
       // reset();
@@ -18,6 +19,7 @@ const PauseTime = ({ startTimer, stopTimer, getPauseTime }) => {
       console.log("STOP ");
       reset();
       pause();
+      getPauseTime(seconds, minutes);
     } else {
       console.log("PAUSE");
       pause();
@@ -37,6 +39,7 @@ const PauseTime = ({ startTimer, stopTimer, getPauseTime }) => {
 const Time = ({ route, navigation }) => {
   const [startbtn, setStartbtn] = React.useState(true);
   const [pausebtn, setPausebtn] = React.useState(false);
+  const [ptime, setPtime] = React.useState("");
   const [current, setCurrent] = React.useState("");
   const [modal, setModal] = React.useState(false);
   const [modalMsg, setModalMsg] = React.useState("");
@@ -44,7 +47,10 @@ const Time = ({ route, navigation }) => {
   const { seconds, minutes, hours, days, isRunning, start, pause, reset } =
     useStopwatch({ autoStart: false });
 
-  React.useEffect(() => {}, [startbtn]);
+  React.useEffect(() => {
+    reset();
+    pause();
+  }, []);
 
   const getData = async () => {
     let v = JSON.parse(await AsyncStorage.getItem("timedTask"));
@@ -61,19 +67,25 @@ const Time = ({ route, navigation }) => {
 
   const getPauseTime = (s, m) => {
     console.log("sec", s, "min", m);
+    setPtime(`${m}:${s}`);
   };
 
   // timer STOPPED
   const updateComplete = async () => {
     setPausebtn(false);
-    console.log("p btn ", pausebtn);
+    // console.log("p btn ", pausebtn);
     setStartbtn(true);
-    console.log("s btn", startbtn);
+    // console.log("s btn", startbtn);
     navigation.setParams({ name: "" });
-    let a = await AsyncStorage.getItem("timedTask");
-    let id = JSON.parse(a);
-    AssignedTasks.doc(id._id).update({ Completed: true });
+    // let a = await AsyncStorage.getItem("timedTask");
+    // let id = JSON.parse(a);
+    // AssignedTasks.doc(id._id).update({ Completed: true });
+    // AssignedTasks.doc(id._id).update({ PauseTime: ptime });
+    // AssignedTasks.doc(id._id).update({ WorkTime: `${minutes}:${seconds}` });
+
     AsyncStorage.setItem("started", "false");
+
+    alert("Well Done");
   };
 
   const hideModal = (ans) => {
@@ -87,9 +99,9 @@ const Time = ({ route, navigation }) => {
     }
 
     if (modalMsg === "Do You Want to Finish this Task?" && ans === "y") {
+      updateComplete();
       reset();
       pause();
-      updateComplete();
     } else if (modalMsg === "Do You Want to Finish this Task?" && ans === "n") {
     }
   };
@@ -141,8 +153,8 @@ const Time = ({ route, navigation }) => {
                     pause();
                     setPausebtn(true);
                   } else {
-                    start();
                     setPausebtn(false);
+                    start();
                   }
                 }}
               >

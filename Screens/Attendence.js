@@ -1,14 +1,50 @@
 import React from "react";
 import { StyleSheet, Text, View, Button, TouchableOpacity } from "react-native";
-import TouchID from "react-native-touch-id";
 import { Calendar } from "react-native-calendars";
-import { abs } from "react-native-reanimated";
+import { Attend } from "../DB";
 
 const Attendence = ({ navigation }) => {
-  const [absentees, setAbsentess] = React.useState({
-    "2021-12-17": { marked: true },
-    "2021-12-25": { marked: true },
-  });
+  const [absentees, setAbsentess] = React.useState({});
+  const [totalAbs, setTotalAbs] = React.useState(0);
+  const [modal, setModal] = React.useState(false);
+  React.useEffect(() => {
+    getAttendence();
+  }, []);
+
+  const markDots = () => {
+    let a = {};
+    for (let i = 1; i <= 31; i++) {
+      if (i < 10) a[`2021-12-0${i}`] = { marked: true };
+      else a[`2021-12-${i}`] = { marked: true };
+    }
+    setAbsentess(a);
+  };
+
+  const markPresent = () => {};
+
+  const hideModal = () => {
+    setModal(false);
+  };
+  const getAttendence = () => {
+    let a = {};
+    Attend.where("empID", "==", "3").onSnapshot((querySnapshot) => {
+      querySnapshot.forEach((v) => {
+        for (let i = 1; i <= 31; i++) {
+          if (i < 10 && v.data().date === `2021-12-0${i}`) {
+            a[`2021-12-0${i}`] = { marked: false };
+            setTotalAbs(totalAbs + 1);
+          } else if (i < 10) {
+            a[`2021-12-0${i}`] = { marked: true };
+          } else if (v.data().date === `2021-12-${i}`) {
+            a[`2021-12-${i}`] = { marked: false };
+            setTotalAbs(totalAbs + 1);
+          } else a[`2021-12-${i}`] = { marked: true };
+        }
+      });
+      setAbsentess(a);
+    });
+  };
+
   React.useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -19,13 +55,7 @@ const Attendence = ({ navigation }) => {
             backgroundColor: "white",
             borderRadius: 30,
           }}
-          onPress={() =>
-            setAbsentess({
-              "2021-12-17": { marked: true },
-              "2021-12-25": { marked: true },
-              "2021-12-29": { marked: true },
-            })
-          }
+          onPress={() => markPresent()}
         >
           <Text style={{ fontSize: 15, fontWeight: "700" }}>
             Take Attendence
@@ -35,36 +65,6 @@ const Attendence = ({ navigation }) => {
     });
   }, [navigation]);
 
-  // React.useEffect(() => {
-  //   check();
-  // });
-
-  const optionalConfigObject = {
-    title: "Authentication Required", // Android
-    imageColor: "#e00606", // Android
-    imageErrorColor: "#ff0000", // Android
-    sensorDescription: "Touch sensor", // Android
-    sensorErrorDescription: "Failed", // Android
-    cancelText: "Cancel", // Android
-    fallbackLabel: "Show Passcode", // iOS (if empty, then label is hidden)
-    unifiedErrors: false, // use unified error messages (default false)
-    passcodeFallback: false, // iOS - allows the device to fall back to using the passcode, if faceid/touch is not available. this does not mean that if touchid/faceid fails the first few times it will revert to passcode, rather that if the former are not enrolled, then it will use the passcode.
-  };
-
-  const check = () => {
-    TouchID.isSupported(optionalConfigObject)
-      .then((biometryType) => {
-        if (biometryType === "FaceID") {
-          console.log("FaceID is supported.");
-        } else {
-          console.log("TouchID is supported.");
-        }
-      })
-      .catch((error) => {
-        // Failure code
-        console.log(error);
-      });
-  };
   return (
     <View style={styles.container}>
       <Calendar
@@ -76,39 +76,20 @@ const Attendence = ({ navigation }) => {
         theme={{
           backgroundColor: "#ffffff",
           calendarBackground: "#ffffff",
-          textSectionTitleColor: "#b6c1cd",
-          textSectionTitleDisabledColor: "#d9e1e8",
-          selectedDayBackgroundColor: "#00adf5",
-          selectedDayTextColor: "#ffffff",
           todayTextColor: "orange", //#00adf5
-          dayTextColor: "#2d4150",
-          textDisabledColor: "#d9e1e8",
-          dotColor: "orange",
-          selectedDotColor: "#ffffff",
           arrowColor: "orange",
-          disabledArrowColor: "#d9e1e8",
-          monthTextColor: "black",
-          indicatorColor: "blue",
-          // textDayFontFamily: "monospace",
-          // textMonthFontFamily: "monospace",
-          // textDayHeaderFontFamily: "monospace",
-          textDayFontWeight: "300",
-          textMonthFontWeight: "bold",
-          textDayHeaderFontWeight: "300",
-          textDayFontSize: 16,
-          textMonthFontSize: 16,
-          textDayHeaderFontSize: 16,
+          dotColor: "orange",
         }}
         markedDates={absentees}
       />
       <View style={styles.wrapper}>
         <View style={styles.absentWrapper}>
           <Text style={{ fontSize: 25, marginBottom: 27 }}>Absents</Text>
-          <Text style={styles.txt}>{Object.keys(absentees).length}</Text>
+          <Text style={styles.txt}>{totalAbs}</Text>
         </View>
         <View style={styles.presentWrapper}>
           <Text style={{ fontSize: 25, marginBottom: 27 }}>Presents</Text>
-          <Text style={styles.txt}>00</Text>
+          <Text style={styles.txt}>{31 - totalAbs}</Text>
         </View>
       </View>
     </View>
@@ -145,7 +126,7 @@ const styles = StyleSheet.create({
   txt: {
     fontSize: 60,
     marginTop: 20,
-    marginLeft: 53,
+    marginLeft: 55,
     fontWeight: "bold",
   },
 });
