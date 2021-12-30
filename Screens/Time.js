@@ -5,6 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import TimeModal from "./TimeModal";
 import { useStopwatch } from "react-timer-hook";
 import { AssignedTasks } from "../DB";
+import CongratsModals from "./CongratsModal";
 
 const PauseTime = ({ startTimer, stopTimer, getPauseTime }) => {
   const { seconds, minutes, hours, days, isRunning, start, pause, reset } =
@@ -43,6 +44,9 @@ const Time = ({ route, navigation }) => {
   const [current, setCurrent] = React.useState("");
   const [modal, setModal] = React.useState(false);
   const [modalMsg, setModalMsg] = React.useState("");
+
+  const [modal2, setModal2] = React.useState(false);
+  const [modalMsg2, setModalMsg2] = React.useState("");
 
   const { seconds, minutes, hours, days, isRunning, start, pause, reset } =
     useStopwatch({ autoStart: false });
@@ -85,7 +89,8 @@ const Time = ({ route, navigation }) => {
 
     AsyncStorage.setItem("started", "false");
 
-    alert("Well Done");
+    setModalMsg2("Well done!");
+    setModal2(true);
   };
 
   const hideModal = (ans) => {
@@ -106,10 +111,18 @@ const Time = ({ route, navigation }) => {
     }
   };
 
+  const hideModal2 = () => {
+    setModal2(false);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.timerWrapper}>
         {modal ? <TimeModal hideModal={hideModal} msg={modalMsg} /> : null}
+
+        {modal2 ? (
+          <CongratsModals hideModal={hideModal2} msg={modalMsg2} />
+        ) : null}
         <Text style={{ fontSize: 37, fontWeight: "bold" }}>{current}</Text>
         <View style={styles.timer}>
           <PauseTime

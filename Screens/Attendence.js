@@ -2,11 +2,16 @@ import React from "react";
 import { StyleSheet, Text, View, Button, TouchableOpacity } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { Attend } from "../DB";
+import AttendeModal from "./AttendModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import CongratsModals from "./CongratsModal";
 
 const Attendence = ({ navigation }) => {
   const [absentees, setAbsentess] = React.useState({});
   const [totalAbs, setTotalAbs] = React.useState(0);
   const [modal, setModal] = React.useState(false);
+  const [modal2, setModal2] = React.useState(false);
+  const [modalMsg, setModalMsg] = React.useState("");
   React.useEffect(() => {
     getAttendence();
   }, []);
@@ -20,28 +25,59 @@ const Attendence = ({ navigation }) => {
     setAbsentess(a);
   };
 
-  const markPresent = () => {};
+  const markAbsents = (d, a) => {
+    d.forEach((v) => {
+      a[v] = { marked: false };
+    });
 
-  const hideModal = () => {
+    // console.log(a);
+    setTotalAbs(d.length);
+    setAbsentess(a);
+  };
+
+  const hideModal2 = () => {
+    setModal2(false);
+  };
+  const hideModal = (auth) => {
     setModal(false);
+    if (auth === "yes") {
+      setModalMsg("Have a nice day!");
+      setModal2(true);
+
+      let date = new Date();
+      let day = date.getDate();
+      if (day < 10) day = `0${day}`;
+      let month = date.getMonth() + 1;
+      if (month > 12) month = 1;
+      let year = date.getFullYear();
+
+      let newAttend = {
+        date: `${year}-${month}-${day}`,
+        empID: "3",
+      };
+
+      Attend.add(newAttend);
+      getAttendence();
+    } else {
+    }
   };
   const getAttendence = () => {
-    let a = {};
+    let a = {}; //obj to be set in absentees
+    let d = []; //dates
     Attend.where("empID", "==", "3").onSnapshot((querySnapshot) => {
       querySnapshot.forEach((v) => {
+        d.push(v.data().date);
         for (let i = 1; i <= 31; i++) {
           if (i < 10 && v.data().date === `2021-12-0${i}`) {
             a[`2021-12-0${i}`] = { marked: false };
-            setTotalAbs(totalAbs + 1);
           } else if (i < 10) {
             a[`2021-12-0${i}`] = { marked: true };
           } else if (v.data().date === `2021-12-${i}`) {
             a[`2021-12-${i}`] = { marked: false };
-            setTotalAbs(totalAbs + 1);
           } else a[`2021-12-${i}`] = { marked: true };
         }
       });
-      setAbsentess(a);
+      markAbsents(d, a);
     });
   };
 
@@ -55,7 +91,7 @@ const Attendence = ({ navigation }) => {
             backgroundColor: "white",
             borderRadius: 30,
           }}
-          onPress={() => markPresent()}
+          onPress={() => setModal(true)}
         >
           <Text style={{ fontSize: 15, fontWeight: "700" }}>
             Take Attendence
@@ -67,6 +103,8 @@ const Attendence = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      {modal ? <AttendeModal hideModal={hideModal} /> : null}
+      {modal2 ? <CongratsModals hideModal={hideModal2} msg={modalMsg} /> : null}
       <Calendar
         style={{
           padding: 10,
