@@ -3,7 +3,6 @@ import { StyleSheet, Text, View, Button, TouchableOpacity } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { Attend } from "../DB";
 import AttendeModal from "./AttendModal";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import CongratsModals from "./CongratsModal";
 
 const Attendence = ({ navigation }) => {
@@ -38,6 +37,8 @@ const Attendence = ({ navigation }) => {
   const hideModal2 = () => {
     setModal2(false);
   };
+
+  // mark attendence in DB
   const hideModal = (auth) => {
     setModal(false);
     if (auth === "yes") {

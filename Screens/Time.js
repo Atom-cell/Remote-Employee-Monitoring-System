@@ -11,6 +11,10 @@ const PauseTime = ({ startTimer, stopTimer, getPauseTime }) => {
   const { seconds, minutes, hours, days, isRunning, start, pause, reset } =
     useStopwatch({ autoStart: false });
   React.useEffect(() => {
+    time();
+  }, [startTimer, startTimer]);
+
+  const time = async () => {
     console.log("render");
     if (startTimer) {
       console.log("START ");
@@ -26,7 +30,7 @@ const PauseTime = ({ startTimer, stopTimer, getPauseTime }) => {
       pause();
       getPauseTime(seconds, minutes);
     }
-  }, [startTimer, startTimer]);
+  };
   return (
     <View style={{ alignItems: "center", marginHorizontal: 20 }}>
       <Text style={{ fontSize: 17 }}>H H : M M</Text>
@@ -40,7 +44,7 @@ const PauseTime = ({ startTimer, stopTimer, getPauseTime }) => {
 const Time = ({ route, navigation }) => {
   const [startbtn, setStartbtn] = React.useState(true);
   const [pausebtn, setPausebtn] = React.useState(false);
-  const [ptime, setPtime] = React.useState("");
+  const [ptime, setPtime] = React.useState(""); //pause time
   const [current, setCurrent] = React.useState("");
   const [modal, setModal] = React.useState(false);
   const [modalMsg, setModalMsg] = React.useState("");
@@ -48,8 +52,11 @@ const Time = ({ route, navigation }) => {
   const [modal2, setModal2] = React.useState(false);
   const [modalMsg2, setModalMsg2] = React.useState("");
 
-  const { seconds, minutes, hours, days, isRunning, start, pause, reset } =
-    useStopwatch({ autoStart: false });
+  const [ptimeStatus, setPTimeStatus] = React.useState("");
+
+  const { seconds, minutes, hours, start, pause, reset } = useStopwatch({
+    autoStart: false,
+  });
 
   React.useEffect(() => {
     reset();
@@ -80,20 +87,38 @@ const Time = ({ route, navigation }) => {
     // console.log("p btn ", pausebtn);
     setStartbtn(true);
     // console.log("s btn", startbtn);
+
+    setPTimeStatus("STOP");
     navigation.setParams({ name: "" });
-    // let a = await AsyncStorage.getItem("timedTask");
-    // let id = JSON.parse(a);
-    // AssignedTasks.doc(id._id).update({ Completed: true });
-    // AssignedTasks.doc(id._id).update({ PauseTime: ptime });
-    // AssignedTasks.doc(id._id).update({ WorkTime: `${minutes}:${seconds}` });
+    let date = new Date();
+    let day = date.getDate();
+    let month = date.getMonth() + 1;
+    if (month > 12) month = 1;
+    let year = date.getFullYear();
+    let a = await AsyncStorage.getItem("timedTask");
+    let id = JSON.parse(a);
+    AssignedTasks.doc(id._id).update({ Completed: true });
+    AssignedTasks.doc(id._id).update({ PauseTime: ptime });
+    AssignedTasks.doc(id._id).update({ WorkTime: `${minutes}:${seconds}` });
+    AssignedTasks.doc(id._id).update({ date: `${year}-${month}-${day}` });
 
     AsyncStorage.setItem("started", "false");
 
     setModalMsg2("Well done!");
     setModal2(true);
+
+    //update assignCOmpleted async
+    let arr1 = [];
+    AssignedTasks.where("empID", "==", "3").onSnapshot((querySnapshot) => {
+      querySnapshot.forEach((v) => {
+        if (v.data().Completed) arr1.push({ _id: v.id, ...v.data() });
+        const jsonValue = JSON.stringify(arr1);
+        AsyncStorage.setItem("assignCompleted", jsonValue);
+      });
+    });
   };
 
-  const hideModal = (ans) => {
+  const hideModal = async (ans) => {
     setModal(false);
     if (modalMsg === "Do You Want to Start this Task?" && ans === "y") {
       AsyncStorage.setItem("started", "true");
@@ -128,6 +153,7 @@ const Time = ({ route, navigation }) => {
           <PauseTime
             stopTimer={startbtn}
             startTimer={pausebtn}
+            msg={ptimeStatus}
             getPauseTime={getPauseTime}
           />
 
@@ -196,6 +222,24 @@ const Time = ({ route, navigation }) => {
           )}
         </View>
       </View>
+      <View style={styles.timerWrapper}>
+        {startbtn ? (
+          <Image
+            style={{ width: 350, height: 350, borderRadius: 20 }}
+            source={require("../assets/pause.png")}
+          />
+        ) : !pausebtn ? (
+          <Image
+            style={{ width: 350, height: 350 }}
+            source={require("../assets/work.gif")}
+          />
+        ) : pausebtn ? (
+          <Image
+            style={{ width: 350, height: 350, borderRadius: 20 }}
+            source={require("../assets/pause.png")}
+          />
+        ) : null}
+      </View>
     </View>
   );
 };
@@ -208,7 +252,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     // justifyContent: "center",
-    padding: 13,
+    padding: 7,
   },
   timerWrapper: {
     backgroundColor: "#F2F2F2",
@@ -217,6 +261,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 20,
+    margin: 5,
   },
   timer: {
     flexDirection: "row",
@@ -262,3 +307,22 @@ const styles = StyleSheet.create({
             <Text style={{ fontSize: 20 }}>Pause time</Text>
           </View> */
 }
+
+// {
+//   !startbtn ? (
+//     <Image
+//       style={{ width: 350, height: 350 }}
+//       source={require("../assets/work.gif")}
+//     />
+//   ) : pausebtn ? (
+//     <Image
+//       style={{ width: 350, height: 350, borderRadius: 20 }}
+//       source={require("../assets/pause.png")}
+//     />
+//   ) : (
+//     <Image
+//       style={{ width: 350, height: 350, borderRadius: 20 }}
+//       source={require("../assets/pause.png")}
+//     />
+//   );
+// }
