@@ -57,17 +57,18 @@ const Dashboard = () => {
     let month = date.getMonth() + 1;
     if (month > 12) month = 1;
     let year = date.getFullYear();
-    // AssignedTasks.where("empID", "==", "3").onSnapshot((querySnapshot) => {
-    //   querySnapshot.forEach((v) => {
-    //     if (v.data().date === `${year}-${month}-${day}}`)
-    //       arr.push({ _id: v.id, ...v.data() });
-    //     setTasksList([...tasksList, ...arr]);
-    //   });
-    // });
+    AssignedTasks.where("empID", "==", "3").onSnapshot((querySnapshot) => {
+      querySnapshot.forEach((v) => {
+        if (v.data().date === `${year}-${month}-${day}` && v.data().Completed)
+          arr.push({ _id: v.id, ...v.data() });
+        console.log("LIST ", arr);
+        setTasksList([...arr]);
+      });
+    });
 
-    let a = await AsyncStorage.getItem("assignCompleted");
-    let b = JSON.parse(a);
-    setTasksList(b);
+    // let a = await AsyncStorage.getItem("assignCompleted");
+    // let b = JSON.parse(a);
+    // setTasksList(b);
   };
 
   return (
@@ -75,7 +76,6 @@ const Dashboard = () => {
       <View style={styles.quote}>
         <Text style={styles.qtxt}>{quote}</Text>
       </View>
-      {/* <Button title="f" onPress={()=>getCompletedTasks()} /> */}
       <View style={styles.progress}>
         <Text style={styles.heading}>Today's Progress</Text>
         <View style={{ borderBottomWidth: 1, margin: 5 }}></View>
@@ -112,36 +112,6 @@ const Dashboard = () => {
             }}
           />
         </View>
-
-        {/* <ScrollView>
-          <View style={styles.tasks}>
-            {tasksList.map((item, index) => {
-              return (
-                <TouchableOpacity
-                  style={styles.itemsWrapper}
-                  onPress={() => {
-                    setModal(true);
-                  }}
-                  key={item._id}
-                >
-                  {modal ? (
-                    <AssignModal
-                      hideModal={hideModal}
-                      obj={item}
-                      completed={true}
-                    />
-                  ) : null}
-                  <View style={styles.item}>
-                    <View style={styles.itemLeft}>
-                      <View style={styles.square}></View>
-                      <Text style={styles.text}>{item.TaskName}</Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </ScrollView> */}
       </View>
     </View>
   );

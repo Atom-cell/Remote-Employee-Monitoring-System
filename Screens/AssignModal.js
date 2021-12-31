@@ -28,6 +28,17 @@ export default function AssignModal({ hideModal, obj, change, completed }) {
             <View style={{ marginHorizontal: 10 }}></View>
             <Text style={styles.txt}>${obj.Rate}/h</Text>
           </View>
+          <View style={{ flexDirection: "row" }}>
+            <View>
+              <Text>Pause Time</Text>
+              <Text style={styles.txt}>{obj.PauseTime}</Text>
+            </View>
+            <View style={{ marginHorizontal: 10 }}></View>
+            <View>
+              <Text>Work Time</Text>
+              <Text style={styles.txt}>{obj.WorkTime}</Text>
+            </View>
+          </View>
           <View style={styles.bottom}>
             <TouchableOpacity onPress={() => change(obj.TaskName, obj._id)}>
               {!completed ? (
@@ -66,7 +77,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
-    height: "60%",
+    height: "70%",
   },
   txt: {
     borderWidth: 1,

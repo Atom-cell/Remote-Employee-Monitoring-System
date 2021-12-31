@@ -13,7 +13,6 @@ import Attendence from "./Screens/Attendence";
 import Time from "./Screens/Time";
 import Tasks from "./Screens/Tasks";
 import Dashboard from "./Screens/Dashboard";
-import TaskMyDay from "./Screens/TaskMyDay";
 import TaskMine from "./Screens/TaskMine";
 import TaskAssigned from "./Screens/TaskAssigned";
 import TaskCompleted from "./Screens/TaskCompleted";

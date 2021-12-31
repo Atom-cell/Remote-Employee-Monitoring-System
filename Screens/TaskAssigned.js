@@ -31,7 +31,7 @@ export default function TaskAssigned({ navigation }) {
     AssignedTasks.where("empID", "==", "3").onSnapshot((querySnapshot) => {
       querySnapshot.forEach((v) => {
         if (!v.data().Completed) arr.push({ _id: v.id, ...v.data() });
-        setTasksList([...tasksList, ...arr]);
+        setTasksList([...arr]);
       });
     });
 
@@ -65,24 +65,28 @@ export default function TaskAssigned({ navigation }) {
     return (
       <View style={styles.container}>
         <View style={styles.tasksWrapper}>
-          <Button
+          {/* <Button
             title="ff"
             onPress={async () => {
               // AsyncStorage.removeItem("timedTask");
               // let a = await AsyncStorage.getItem("timedTask");
-              let a = await AsyncStorage.getItem("assignCompleted");
-              console.log(JSON.parse(a));
+              // let a = await AsyncStorage.getItem("assignCompleted");
+              // console.log(JSON.parse(a));
+              console.log(tasksList);
             }}
-          />
+          /> */}
           <Text style={styles.heading}>Assigned Work</Text>
           <View style={{ borderBottomWidth: 1, margin: 5 }}></View>
+          {tasksList.length == 0 ? (
+            <Text>No Tasks for you. Enjoy your Day!</Text>
+          ) : null}
           {modal ? (
             <AssignModal hideModal={hideModal} obj={obj} change={change} />
           ) : null}
 
           <FlatList
             refreshing={false}
-            // onRefresh={() => getData()}
+            onRefresh={() => getData()}
             data={tasksList}
             renderItem={(item) => {
               return (

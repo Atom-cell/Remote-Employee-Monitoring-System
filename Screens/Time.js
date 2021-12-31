@@ -107,15 +107,16 @@ const Time = ({ route, navigation }) => {
     setModalMsg2("Well done!");
     setModal2(true);
 
-    //update assignCOmpleted async
-    let arr1 = [];
-    AssignedTasks.where("empID", "==", "3").onSnapshot((querySnapshot) => {
-      querySnapshot.forEach((v) => {
-        if (v.data().Completed) arr1.push({ _id: v.id, ...v.data() });
-        const jsonValue = JSON.stringify(arr1);
-        AsyncStorage.setItem("assignCompleted", jsonValue);
-      });
-    });
+    // update assignCOmpleted async
+
+    // let arr1 = [];
+    // AssignedTasks.where("empID", "==", "3").onSnapshot((querySnapshot) => {
+    //   querySnapshot.forEach((v) => {
+    //     if (v.data().Completed) arr1.push({ _id: v.id, ...v.data() });
+    //     const jsonValue = JSON.stringify(arr1);
+    //     AsyncStorage.setItem("assignCompleted", jsonValue);
+    //   });
+    // });
   };
 
   const hideModal = async (ans) => {
