@@ -5,7 +5,6 @@ import Modal from "react-native-modal";
 export default function AssignModal({ hideModal, obj, change, completed }) {
   const [isModalVisible, setModalVisible] = useState(true);
 
-  const startTask = () => {};
   return (
     <View style={{ flex: 1 }}>
       <Modal isVisible={true} onBackdropPress={() => hideModal()}>
@@ -39,8 +38,25 @@ export default function AssignModal({ hideModal, obj, change, completed }) {
               <Text style={styles.txt}>{obj.WorkTime}</Text>
             </View>
           </View>
+          <View>
+            <Text>To be paid</Text>
+            <Text
+              style={{
+                borderWidth: 1,
+                borderRadius: 10,
+                fontSize: 20,
+                padding: 10,
+                marginTop: 5,
+                marginBottom: 5,
+              }}
+            >
+              ${obj.Total}
+            </Text>
+          </View>
           <View style={styles.bottom}>
-            <TouchableOpacity onPress={() => change(obj.TaskName, obj._id)}>
+            <TouchableOpacity
+              onPress={() => change(obj.TaskName, obj._id, obj.Rate)}
+            >
               {!completed ? (
                 <Text style={{ fontWeight: "bold", fontSize: 25 }}>
                   Start Task
@@ -56,7 +72,7 @@ export default function AssignModal({ hideModal, obj, change, completed }) {
 
 const styles = StyleSheet.create({
   top: {
-    height: "13%",
+    height: "10%",
     width: "100%",
     position: "absolute",
     top: 0,
@@ -65,7 +81,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   bottom: {
-    height: "13%",
+    height: "10%",
     width: "100%",
     position: "absolute",
     bottom: 0,
@@ -77,7 +93,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
-    height: "70%",
+    height: "75%",
   },
   txt: {
     borderWidth: 1,

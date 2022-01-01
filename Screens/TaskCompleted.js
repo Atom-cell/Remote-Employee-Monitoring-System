@@ -23,6 +23,7 @@ export default function TaskCompleted() {
   const [filterN, setFilterN] = React.useState("My Tasks");
   const [ATasks, setATasks] = React.useState([]); //Assigned tasks List
   const [modal, setModal] = React.useState(false);
+  const [obj, setObj] = React.useState({});
 
   React.useEffect(() => {
     filterTheList();
@@ -41,6 +42,7 @@ export default function TaskCompleted() {
       }
     } catch (e) {}
     // } else {
+
     try {
       const jsonValue = await AsyncStorage.getItem("assignCompleted");
       if (JSON.parse(jsonValue) !== null) {
@@ -119,21 +121,16 @@ export default function TaskCompleted() {
                   );
                 })
               : ATasks.map((item, index) => {
+                  console.log(item);
                   return (
                     <TouchableOpacity
                       style={styles.itemsWrapper}
                       onPress={() => {
                         setModal(true);
+                        setObj(item);
                       }}
                       key={item._id}
                     >
-                      {modal ? (
-                        <AssignModal
-                          hideModal={hideModal}
-                          obj={item}
-                          completed={true}
-                        />
-                      ) : null}
                       <View style={styles.item}>
                         <View style={styles.itemLeft}>
                           <View style={styles.square}></View>
@@ -143,6 +140,10 @@ export default function TaskCompleted() {
                     </TouchableOpacity>
                   );
                 })}
+
+            {modal ? (
+              <AssignModal hideModal={hideModal} obj={obj} completed={true} />
+            ) : null}
           </View>
         </ScrollView>
       </View>

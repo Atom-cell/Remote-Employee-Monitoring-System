@@ -10,7 +10,6 @@ import {
 import axios from "axios";
 import DB, { AssignedTasks } from "../DB";
 import AssignModal from "./AssignModal";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Dashboard = () => {
   const [quote, setQuote] = React.useState("");
@@ -61,14 +60,9 @@ const Dashboard = () => {
       querySnapshot.forEach((v) => {
         if (v.data().date === `${year}-${month}-${day}` && v.data().Completed)
           arr.push({ _id: v.id, ...v.data() });
-        console.log("LIST ", arr);
         setTasksList([...arr]);
       });
     });
-
-    // let a = await AsyncStorage.getItem("assignCompleted");
-    // let b = JSON.parse(a);
-    // setTasksList(b);
   };
 
   return (
@@ -110,6 +104,7 @@ const Dashboard = () => {
                 </TouchableOpacity>
               );
             }}
+            keyExtractor={(item, index) => index.toString()}
           />
         </View>
       </View>

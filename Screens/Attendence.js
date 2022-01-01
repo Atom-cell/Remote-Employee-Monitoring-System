@@ -12,24 +12,26 @@ const Attendence = ({ navigation }) => {
   const [modal2, setModal2] = React.useState(false);
   const [modalMsg, setModalMsg] = React.useState("");
   React.useEffect(() => {
+    // markDots();
     getAttendence();
   }, []);
 
   const markDots = () => {
     let a = {};
     for (let i = 1; i <= 31; i++) {
-      if (i < 10) a[`2021-12-0${i}`] = { marked: true };
-      else a[`2021-12-${i}`] = { marked: true };
+      if (i < 10) a[`2022-01-0${i}`] = { marked: true };
+      else a[`2022-01-${i}`] = { marked: true };
     }
     setAbsentess(a);
   };
 
   const markAbsents = (d, a) => {
-    d.forEach((v) => {
-      a[v] = { marked: false };
-    });
-
-    // console.log(a);
+    if (d !== []) {
+      d.forEach((v) => {
+        console.log("insiide foreach", v);
+        a[v] = { marked: false };
+      });
+    }
     setTotalAbs(d.length);
     setAbsentess(a);
   };
@@ -49,7 +51,7 @@ const Attendence = ({ navigation }) => {
       let day = date.getDate();
       if (day < 10) day = `0${day}`;
       let month = date.getMonth() + 1;
-      if (month > 12) month = 1;
+      month = `0${month}`;
       let year = date.getFullYear();
 
       let newAttend = {
@@ -63,22 +65,26 @@ const Attendence = ({ navigation }) => {
     }
   };
   const getAttendence = () => {
+    // markDots();
     let a = {}; //obj to be set in absentees
     let d = []; //dates
     Attend.where("empID", "==", "3").onSnapshot((querySnapshot) => {
       querySnapshot.forEach((v) => {
         d.push(v.data().date);
         for (let i = 1; i <= 31; i++) {
-          if (i < 10 && v.data().date === `2021-12-0${i}`) {
-            a[`2021-12-0${i}`] = { marked: false };
+          if (i < 10 && v.data().date === `2022-01-0${i}`) {
+            a[`2022-01-0${i}`] = { marked: false };
           } else if (i < 10) {
-            a[`2021-12-0${i}`] = { marked: true };
-          } else if (v.data().date === `2021-12-${i}`) {
-            a[`2021-12-${i}`] = { marked: false };
-          } else a[`2021-12-${i}`] = { marked: true };
+            a[`2022-01-0${i}`] = { marked: true };
+          } else if (v.data().date === `2022-01-${i}`) {
+            a[`2022-01-${i}`] = { marked: false };
+          } else a[`2022-01-${i}`] = { marked: true };
         }
       });
-      markAbsents(d, a);
+      setAbsentess(a);
+      setTotalAbs(d.length);
+
+      // markAbsents(d, a);
     });
   };
 

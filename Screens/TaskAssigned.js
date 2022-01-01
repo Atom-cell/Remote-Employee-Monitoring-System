@@ -50,78 +50,71 @@ export default function TaskAssigned({ navigation }) {
     setModal(false);
   };
 
-  const change = async (name, id) => {
+  const change = async (name, id, rate) => {
     hideModal();
     let obj = {
       name: name,
       _id: id,
+      rate: rate,
     };
     const jsonValue = JSON.stringify(obj);
     await AsyncStorage.setItem("timedTask", jsonValue);
     navigation.navigate("Time", { name: name });
   };
 
-  if (!isLoading) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.tasksWrapper}>
-          {/* <Button
-            title="ff"
-            onPress={async () => {
-              // AsyncStorage.removeItem("timedTask");
-              // let a = await AsyncStorage.getItem("timedTask");
-              // let a = await AsyncStorage.getItem("assignCompleted");
-              // console.log(JSON.parse(a));
-              console.log(tasksList);
-            }}
-          /> */}
-          <Text style={styles.heading}>Assigned Work</Text>
-          <View style={{ borderBottomWidth: 1, margin: 5 }}></View>
-          {tasksList.length == 0 ? (
-            <Text>No Tasks for you. Enjoy your Day!</Text>
-          ) : null}
-          {modal ? (
-            <AssignModal hideModal={hideModal} obj={obj} change={change} />
-          ) : null}
+  return (
+    <View style={styles.container}>
+      <View style={styles.tasksWrapper}>
+        {/* <Button
+          title="ff"
+          onPress={async () => {
+            // AsyncStorage.removeItem("timedTask");
+            // let a = await AsyncStorage.getItem("timedTask");
+            // let a = await AsyncStorage.getItem("assignCompleted");
+            // console.log(JSON.parse(a));
+            // console.log(tasksList);
+            AsyncStorage.setItem("started", "false");
+          }}
+        /> */}
+        <Text style={styles.heading}>Assigned Work</Text>
+        <View style={{ borderBottomWidth: 1, margin: 5 }}></View>
+        {tasksList.length == 0 ? (
+          <Text>No Tasks for you. Enjoy your Day!</Text>
+        ) : null}
+        {modal ? (
+          <AssignModal hideModal={hideModal} obj={obj} change={change} />
+        ) : null}
 
-          <FlatList
-            refreshing={false}
-            onRefresh={() => getData()}
-            data={tasksList}
-            renderItem={(item) => {
-              return (
-                <TouchableOpacity
-                  style={styles.itemsWrapper}
-                  onPress={async () => {
-                    let a = await AsyncStorage.getItem("started");
-                    if (a === "false") {
-                      setModal(true);
-                      setObj(item.item);
-                    }
-                  }}
-                >
-                  <View style={styles.item}>
-                    <View style={styles.itemLeft}>
-                      <View style={styles.square}></View>
-                      <Text style={styles.text}>{item.item.TaskName}</Text>
-                    </View>
+        <FlatList
+          refreshing={false}
+          onRefresh={() => getData()}
+          data={tasksList}
+          renderItem={(item) => {
+            return (
+              <TouchableOpacity
+                style={styles.itemsWrapper}
+                onPress={async () => {
+                  let a = await AsyncStorage.getItem("started");
+                  if (a === "false") {
+                    setModal(true);
+                    setObj(item.item);
+                  }
+                }}
+              >
+                <View style={styles.item}>
+                  <View style={styles.itemLeft}>
+                    <View style={styles.square}></View>
+                    <Text style={styles.text}>{item.item.TaskName}</Text>
                   </View>
-                </TouchableOpacity>
-              );
-            }}
-            keyExtractor={(item, index) => index.toString()}
-          />
-        </View>
+                </View>
+              </TouchableOpacity>
+            );
+          }}
+          keyExtractor={(item, index) => index.toString()}
+        />
       </View>
-    );
-  } else {
-    return (
-      <View style={styles.loading}>
-        <ActivityIndicator color="#F4BE2C" size="large" />
-        <Text style={{ alignSelf: "center" }}>Getting data....</Text>
-      </View>
-    );
-  }
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

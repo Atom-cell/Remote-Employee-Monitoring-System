@@ -95,12 +95,19 @@ const Time = ({ route, navigation }) => {
     let month = date.getMonth() + 1;
     if (month > 12) month = 1;
     let year = date.getFullYear();
+
     let a = await AsyncStorage.getItem("timedTask");
     let id = JSON.parse(a);
+
+    let mins = seconds / 60;
+    let hrs = (minutes + mins) / 60;
+    let total = Math.ceil(id.rate * hrs);
+
     AssignedTasks.doc(id._id).update({ Completed: true });
     AssignedTasks.doc(id._id).update({ PauseTime: ptime });
     AssignedTasks.doc(id._id).update({ WorkTime: `${minutes}:${seconds}` });
     AssignedTasks.doc(id._id).update({ date: `${year}-${month}-${day}` });
+    AssignedTasks.doc(id._id).update({ Total: total });
 
     AsyncStorage.setItem("started", "false");
 
@@ -109,14 +116,14 @@ const Time = ({ route, navigation }) => {
 
     // update assignCOmpleted async
 
-    // let arr1 = [];
-    // AssignedTasks.where("empID", "==", "3").onSnapshot((querySnapshot) => {
-    //   querySnapshot.forEach((v) => {
-    //     if (v.data().Completed) arr1.push({ _id: v.id, ...v.data() });
-    //     const jsonValue = JSON.stringify(arr1);
-    //     AsyncStorage.setItem("assignCompleted", jsonValue);
-    //   });
-    // });
+    let arr1 = [];
+    AssignedTasks.where("empID", "==", "3").onSnapshot((querySnapshot) => {
+      querySnapshot.forEach((v) => {
+        if (v.data().Completed) arr1.push({ _id: v.id, ...v.data() });
+        const jsonValue = JSON.stringify(arr1);
+        AsyncStorage.setItem("assignCompleted", jsonValue);
+      });
+    });
   };
 
   const hideModal = async (ans) => {
