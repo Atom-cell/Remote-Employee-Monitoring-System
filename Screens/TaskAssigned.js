@@ -8,13 +8,14 @@ import {
   View,
   FlatList,
   TouchableOpacity,
-  ActivityIndicator,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AssignModal from "./AssignModal";
 
 export default function TaskAssigned({ navigation }) {
   const [tasksList, setTasksList] = React.useState([]);
+  const [backup, setBackup] = React.useState([]);
+
   const [obj, setObj] = React.useState({});
   const [isLoading, setIsLoading] = React.useState(true);
   const [modal, setModal] = React.useState(false);
@@ -32,6 +33,7 @@ export default function TaskAssigned({ navigation }) {
       querySnapshot.forEach((v) => {
         if (!v.data().Completed) arr.push({ _id: v.id, ...v.data() });
         setTasksList([...arr]);
+        setBackup([...arr]);
       });
     });
 
@@ -48,6 +50,18 @@ export default function TaskAssigned({ navigation }) {
 
   const hideModal = () => {
     setModal(false);
+  };
+
+  const todaysTasks = () => {
+    let date = new Date();
+    let day = date.getDate();
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
+    let today = tasksList.filter((v) => {
+      return v.dueDate == `${year}-${month}-${day}`;
+    });
+
+    setTasksList(today);
   };
 
   const change = async (name, id, rate) => {
@@ -78,6 +92,17 @@ export default function TaskAssigned({ navigation }) {
         /> */}
         <Text style={styles.heading}>Assigned Work</Text>
         <View style={{ borderBottomWidth: 1, margin: 5 }}></View>
+        <View style={styles.btnWrapper}>
+          <TouchableOpacity
+            onPress={() => setTasksList(backup)}
+            style={styles.addbtn}
+          >
+            <Text style={styles.addtxt}>All</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => todaysTasks()} style={styles.addbtn}>
+            <Text style={styles.addtxt}>Today's Tasks</Text>
+          </TouchableOpacity>
+        </View>
         {tasksList.length == 0 ? (
           <Text>No Tasks for you. Enjoy your Day!</Text>
         ) : null}
@@ -168,6 +193,21 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     opacity: 0.5,
     marginRight: 15,
+  },
+  btnWrapper: {
+    flexDirection: "row",
+  },
+  addbtn: {
+    backgroundColor: "#F4BE2C",
+    // width: "100%",
+    padding: 13,
+    marginBottom: 5,
+    marginHorizontal: 5,
+  },
+  addtxt: {
+    fontSize: 17,
+    fontWeight: "bold",
+    alignSelf: "center",
   },
 });
 

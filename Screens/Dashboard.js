@@ -68,7 +68,9 @@ const Dashboard = () => {
   return (
     <View style={styles.container}>
       <View style={styles.quote}>
+        {/* <ScrollView contentContentStyle={styles.quote}> */}
         <Text style={styles.qtxt}>{quote}</Text>
+        {/* </ScrollView> */}
       </View>
       <View style={styles.progress}>
         <Text style={styles.heading}>Today's Progress</Text>

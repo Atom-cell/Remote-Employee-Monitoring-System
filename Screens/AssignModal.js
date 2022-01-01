@@ -38,20 +38,37 @@ export default function AssignModal({ hideModal, obj, change, completed }) {
               <Text style={styles.txt}>{obj.WorkTime}</Text>
             </View>
           </View>
-          <View>
-            <Text>To be paid</Text>
-            <Text
-              style={{
-                borderWidth: 1,
-                borderRadius: 10,
-                fontSize: 20,
-                padding: 10,
-                marginTop: 5,
-                marginBottom: 5,
-              }}
-            >
-              ${obj.Total}
-            </Text>
+          <View style={{ flexDirection: "row" }}>
+            <View>
+              <Text>Due Date</Text>
+              <Text
+                style={{
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  fontSize: 20,
+                  padding: 10,
+                  marginTop: 5,
+                  marginBottom: 5,
+                }}
+              >
+                {obj.dueDate}
+              </Text>
+            </View>
+            <View>
+              <Text>To be paid</Text>
+              <Text
+                style={{
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  fontSize: 20,
+                  padding: 10,
+                  marginTop: 5,
+                  marginBottom: 5,
+                }}
+              >
+                ${obj.Total}
+              </Text>
+            </View>
           </View>
           <View style={styles.bottom}>
             <TouchableOpacity

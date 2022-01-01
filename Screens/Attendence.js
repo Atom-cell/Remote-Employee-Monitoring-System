@@ -11,10 +11,40 @@ const Attendence = ({ navigation }) => {
   const [modal, setModal] = React.useState(false);
   const [modal2, setModal2] = React.useState(false);
   const [modalMsg, setModalMsg] = React.useState("");
+  const [present, setPresent] = React.useState(false);
   React.useEffect(() => {
     // markDots();
     getAttendence();
   }, []);
+  React.useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          style={{
+            padding: 10,
+            marginRight: 20,
+            backgroundColor: "white",
+            borderRadius: 30,
+          }}
+          onPress={() => takeAttendence()}
+        >
+          <Text style={{ fontSize: 15, fontWeight: "700" }}>
+            Take Attendence
+          </Text>
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
+
+  const takeAttendence = () => {
+    console.log(present);
+    if (present) {
+      // console.log("prsent");
+    } else {
+      // console.log("absent");
+      setModal(true);
+    }
+  };
 
   const markDots = () => {
     let a = {};
@@ -25,13 +55,20 @@ const Attendence = ({ navigation }) => {
     setAbsentess(a);
   };
 
-  const markAbsents = (d, a) => {
+  const markPresents = (d, a) => {
+    let date = new Date();
+    let day = date.getDate();
+    if (day < 10) day = `0${day}`;
+    let month = date.getMonth() + 1;
+    month = `0${month}`;
+    let year = date.getFullYear();
+    let tdate = `${year}-${month}-${day}`;
     if (d !== []) {
       d.forEach((v) => {
-        console.log("insiide foreach", v);
         a[v] = { marked: false };
       });
     }
+    if (!a[tdate].marked) setPresent(true);
     setTotalAbs(d.length);
     setAbsentess(a);
   };
@@ -44,6 +81,7 @@ const Attendence = ({ navigation }) => {
   const hideModal = (auth) => {
     setModal(false);
     if (auth === "yes") {
+      setPresent(true);
       setModalMsg("Have a nice day!");
       setModal2(true);
 
@@ -81,32 +119,12 @@ const Attendence = ({ navigation }) => {
           } else a[`2022-01-${i}`] = { marked: true };
         }
       });
-      setAbsentess(a);
+      // setAbsentess(a);
       setTotalAbs(d.length);
 
-      // markAbsents(d, a);
+      markPresents(d, a);
     });
   };
-
-  React.useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity
-          style={{
-            padding: 10,
-            marginRight: 20,
-            backgroundColor: "white",
-            borderRadius: 30,
-          }}
-          onPress={() => setModal(true)}
-        >
-          <Text style={{ fontSize: 15, fontWeight: "700" }}>
-            Take Attendence
-          </Text>
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation]);
 
   return (
     <View style={styles.container}>
@@ -130,11 +148,11 @@ const Attendence = ({ navigation }) => {
       <View style={styles.wrapper}>
         <View style={styles.absentWrapper}>
           <Text style={{ fontSize: 25, marginBottom: 27 }}>Absents</Text>
-          <Text style={styles.txt}>{totalAbs}</Text>
+          <Text style={styles.txt}>{31 - totalAbs}</Text>
         </View>
         <View style={styles.presentWrapper}>
           <Text style={{ fontSize: 25, marginBottom: 27 }}>Presents</Text>
-          <Text style={styles.txt}>{31 - totalAbs}</Text>
+          <Text style={styles.txt}>{totalAbs}</Text>
         </View>
       </View>
     </View>

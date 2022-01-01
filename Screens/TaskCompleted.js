@@ -135,6 +135,15 @@ export default function TaskCompleted() {
                         <View style={styles.itemLeft}>
                           <View style={styles.square}></View>
                           <Text style={styles.text}>{item.TaskName}</Text>
+                          <Text
+                            style={{
+                              fontSize: 15,
+                              marginLeft: 5,
+                              fontWeight: "bold",
+                            }}
+                          >
+                            | ${item.Total}
+                          </Text>
                         </View>
                       </View>
                     </TouchableOpacity>
